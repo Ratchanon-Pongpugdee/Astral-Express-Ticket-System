@@ -1,0 +1,10 @@
+sID   sName                 Price0    PersIN   PersOUT
+1     The Milky Way              0         4         0
+2     Reverie Haven              9         2         3
+3     Celestia Nexus            18         1         2
+4     Eternal Orbit             30         0         1
+5     Eclipse Sanctum           42         0         1
+6     Golden Hour               55         1         0
+7     Infinite Horizon          67         0         0
+8     Amphoreus Tenkai          80         2         0
+9     Nirvana Terminal          95         0         3
