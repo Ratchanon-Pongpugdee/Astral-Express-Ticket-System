@@ -219,7 +219,7 @@ def saveStationData(stCol, stMem, stFN):
     return
 
 
-# ***** money and stations memory, clear, copy, add  *****     
+# ***** money and stations memory, clear, copy, add  *****
 def clearWalletQuantity(mMem, clrQty=0):
     """(2026-09-05) 
         สร้าง Money Memory ชุดใหม่ โดยกำหนดจำนวนmQty เป็นค่าที่กำหนดโดยเริ่มdefault เป็น 0 
@@ -305,16 +305,18 @@ def copyStationData(stMem):
         
     return newMem
 
-# ***** Maintenance Memory wlMem and stMem ***** 
+# ***** Maintenance Memory wlMem and stMem *****
 def updateWalletData(wlMem):
     """(2024-09-22)
         แก้ไข Wallet ทั้งชุด (มีตัวเลือกล้าง mQty ก่อน และคำนวณmAmt ใหม่) 
     """
-    clrQty_Flag = input("Clear Qty <y,Y> = ")
+    clrQty_Flag = input("Are you want to reset Qty <y,n> = ")
     if clrQty_Flag in {'y','Y'}:
         nMem = clearWalletQuantity(wlMem)
-    else:
+    if clrQty_Flag in {'n','N'}:
         nMem = copyWalletData(wlMem)
+    else:
+        print("Hey!! I said y or n.🤨")
 
     newMem = []
     editFlag = 0
@@ -345,21 +347,21 @@ def updateWalletData(wlMem):
     print(f'---end---\n')
     
     if editFlag:
-        print(f'There are {editFlag:3} changed')
+        print(f'There are {editFlag:3} changed 😉')
     else:
-        print(f'All data are not changed')
-        
-    #input('Press Any Key')
+        print(f'Huh!! What was this thing ? data is same. 🤨')
         
     return newMem
 
 def updateStationData(stMem):
     """(2024-09-21) Enter All Stations Data """
-    clr_PIO = input("Clear PIN, POUT <y,Y> = ")
+    clr_PIO = input("Are you want to reset PIN, POUT <y,n> = ")
     if clr_PIO in {'y','Y'}:
         nMem = clearPassengerCounts(stMem)
-    else:
+    if clr_PIO in {'n','N'}:
         nMem = copyStationData(stMem)
+    else:
+        print("Hey!! I said y or n.🤨")
 
     newMem = []
     editFlag = 0
@@ -382,11 +384,9 @@ def updateStationData(stMem):
     print(f'---end---\n')
     
     if editFlag:
-        print(f'There are {editFlag:3} changed')
+        print(f'There are {editFlag:3} changed 😉')
     else:
-        print(f'All data are not changed')
-        
-    #input('Press Any Key')
+        print(f'Huh!! What was this thing ? data is same. 🤨')
         
     return newMem
 
@@ -484,7 +484,7 @@ def updatePassengerInOut(frmCode, toCode, stMem, addQty=1):
 
 # ***** Ticket Vending Machine *****
 ACCEPTED_VALUES = (1, 2, 5, 10, 20, 50, 100, 500, 1000)
-MAINTENANCE_PASSWORD = 'Manop'
+THE_GREAT_PASSWORD = 'Manop'
 
 def findStation(stMem, number):
     """ค้นหาสถานีจากหมายเลขที่แสดงบนหน้าจอ"""
@@ -516,6 +516,26 @@ def showCashList(title, cashMem):
         if cash.mQty:
             print(f'  {cash.mValue:4} Credits x {cash.mQty}')
 
+def showChangeShortage(changeAmount, walletMem):
+    """แสดงชนิดเงินและจำนวนที่ไม่พอสำหรับทอนเงิน"""
+    remaining = changeAmount
+    shortages = []
+
+    for money in reversed(walletMem):
+        requiredQty = remaining // money.mValue
+        if requiredQty:
+            usedQty = min(requiredQty, money.mQty)
+            if money.mQty < requiredQty:
+                shortages.append((money.mValue, requiredQty, money.mQty))
+            remaining -= usedQty * money.mValue
+
+    print('\nSorry 😭 Change is not enough\nI will show detail for you pay for change is enough:')
+    for value, requiredQty, availableQty in shortages:
+        print(
+            f'  {value:4} Credits: , I have {availableQty:2} ❌'
+            f'| Need {requiredQty} mQty for give you.'
+        )
+
 def buyTicket(stMem, wlMem, stCol, mnCol, stFN, wlFN):
     """เลือกสถานี รับเงิน ทอนเงิน และบันทึกข้อมูลเมื่อขายสำเร็จ"""
     print('\n[Buy Tickets]\n\nAvailable Stations')
@@ -531,7 +551,7 @@ def buyTicket(stMem, wlMem, stCol, mnCol, stFN, wlFN):
             return wlMem
         origin = findStation(stMem, choice)
         if origin is None:
-            print('\nWhere are you now ?🤨, Try again.')
+            print('\nWhere are you now ?🤨\nTry again.')
 
     destination = None
     while destination is None:
@@ -541,19 +561,19 @@ def buyTicket(stMem, wlMem, stCol, mnCol, stFN, wlFN):
         destination = findStation(stMem, choice)
         if destination is None or destination is origin:
             destination = None
-            print('\nWhere are you going ?🤨, Select Destination again.')
+            print('\nWhere are you going ?🤨\nTry again.')
 
     price = abs(destination.sPrice - origin.sPrice)
     cashIn = []
     paid = 0
-    print(f'\n{origin.sName} -> {destination.sName}, Ticket Price: {price} Credits')
+    print(f'\n{origin.sName} -> {destination.sName}\nTicket Price: {price} Credits')
 
     while paid < price:
         valueText = input(
-            'Enter cash <1, 2, 5, 10, 20, 50, 100, 500, 1000, c>: '
+            'Enter to pay <1, 2, 5, 10, 20, 50, 100, 500, 1000, c>: '
         ).strip().lower()
         if valueText == 'c':
-            showCashList('Cash Returned:', cashIn)
+            showCashList('\nYou are boring. 🙄❌\nCash Returned:', cashIn)
             return wlMem
         if not valueText.isdigit() or int(valueText) not in ACCEPTED_VALUES:
             print('\nAre you stupid or something ?🤨. I can not got that.❌')
@@ -567,18 +587,19 @@ def buyTicket(stMem, wlMem, stCol, mnCol, stFN, wlFN):
                 break
         else:
             cashIn.append(Moneyset(str(value), f'Cash{value}', value, 1, value))
-        print(f'\nRemaining: {paid} Credits, Keep going 😘')
+            print(f'\nYipee!! You paid: {paid} Credits, Keep going 😘')
 
     error, changeMem, newWallet = changeMoney(paid - price, cashIn, wlMem)
     if error:
         print('\nSALE FAILED: Change is not available.')
-        showCashList('\nSorry! change is not enough ❌, Cash Returned:', cashIn)
+        showChangeShortage(paid - price, wlMem)
+        showCashList('\nCash Returned:', cashIn)
         return wlMem
 
     error, newStations = updatePassengerInOut(origin.sCode, destination.sCode, stMem)
     if error:
         print('\nSALE FAILED: Station data could not be updated.')
-        showCashList('\nYou are boring. 🫩❌, Cash Returned:', cashIn)
+        showCashList('\nSystem wants to rest. 🙄❌\nCash Returned:', cashIn)
         return wlMem
 
     stMem[:] = newStations
@@ -590,11 +611,12 @@ def buyTicket(stMem, wlMem, stCol, mnCol, stFN, wlFN):
 
 def maintenance(stMem, wlMem, stCol, mnCol, stFN, wlFN):
     """เมนูแก้ไขข้อมูลสถานีและเงินในตู้"""
-    if input('Maintenance Password: ') != MAINTENANCE_PASSWORD:
-        print('\nWho are you ? May I eliminate you.❌')
+    if input('Maintenance Password: ') != THE_GREAT_PASSWORD:
+        print('\nWho are you ? get out!!.❌')
         return stMem, wlMem
 
     while True:
+        print('\nWelcome back, What the hell do you want to do ?😎')
         choice = input('\n[g] Station  [w] Wallet  [c] Close: ').strip().lower()
         if choice == 'g':
             stMem = updateStationData(stMem)
@@ -605,10 +627,10 @@ def maintenance(stMem, wlMem, stCol, mnCol, stFN, wlFN):
         elif choice == 'c':
             return stMem, wlMem
         else:
-            print('\nPlease select g, w, or c.🤨')
+            print('\nHuh!! Admin.🙄\nI said select g, w, or c.🤨')
 
 def runMachine():
-    """ควบคุมเมนูหลักของเครื่องจำหน่ายตั๋ว"""
+
     wlFN = 'Wallet.txt'
     stFN = 'Stations.txt'
     mnCol, wlMem = loadWalletData(wlFN)
@@ -616,7 +638,7 @@ def runMachine():
 
     while True:
         print('\n' + '=' * 42)
-        print(f'{'ASTRAL EXPRESS TICKET SYSTEM':^42}')
+        print(f"{'ETERNAL ASTRAL METROPOLITAN RAILWAY':^42}")
         print('=' * 42)
         print('\n[b] Buy Ticket\n[m] Maintenance\n[s] Shutdown')
         choice = input('\nSelect menu: ').strip().lower()
@@ -626,13 +648,13 @@ def runMachine():
         elif choice == 'm':
             stMem, wlMem = maintenance(stMem, wlMem, stCol, mnCol, stFN, wlFN)
         elif choice == 's':
-            if input('Shutdown Password: ') == MAINTENANCE_PASSWORD:
-                print('See you next time, Good bye.😴')
+            if input('Shutdown Password: ') == THE_GREAT_PASSWORD:
+                print('\nSee you next time, Good bye.😴')
+                print('Shutting down ...💤\n')
                 return
             print('\nSure that password is valid ?.😂')
         else:
-            print('\nPlease select b, m, or s.🤨')
+            print('\nI said select b, m, or s.🤨')
 
 if __name__ == "__main__":
     runMachine()
-    
