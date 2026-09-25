@@ -1,4 +1,4 @@
-# ETERNAL ASTRAL METROPOLITAN RAILWAY
+# INTERSTELLAR EXPRESS SKYTRAIN
 
 ระบบจำหน่ายตั๋วรถไฟอวกาศแบบ Command Line Interface (CLI) พัฒนาด้วยภาษา Python
 สำหรับจำลองการเลือกสถานี คำนวณราคาตั๋ว รับเงิน ทอนเงิน และบันทึกข้อมูลการเดินทาง
@@ -70,6 +70,6 @@ Manop
 
 ## Development Team
 
-**Ratchanon Pongpakdee** / **Thanapong Klungmueng** / **Saranvich Saprungrueng**
-**2026 | ©Chitralada Technology Institute | Engineering Computer Generation VI**
+**Ratchanon Pongpakdee** / **Thanapong Klungmueng** / **Saranvich Saprungrueng**<br> 
+**2026 | ©Chitralada Technology Institute | Engineering Computer Generation VI**<br>
 **Released on 26 September 2026**
